@@ -1,3 +1,15 @@
 # Changelog
 
+## v1.0.0 (2025-01-22)
+
+### Features
+
+- Initial release and correction to pytest ([`9b47a78`](https://github.com/markm-io/slack-webhook-notifier/commit/9b47a78f1f4dea10bb24ff3716687b3b5a826227))
+- Initial release and correction to pytest ([`2979900`](https://github.com/markm-io/slack-webhook-notifier/commit/29799009f6de431b1e6ae3942dcd26ce6f85fd1a))
+- Initial release ([`d344427`](https://github.com/markm-io/slack-webhook-notifier/commit/d3444277981fbf0476b28f7caade0bd3ca60de53))
+
 ## v0.0.0 (2025-01-22)
+
+### Documentation
+
+- Add @markm-io as a contributor ([`7f4b8f0`](https://github.com/markm-io/slack-webhook-notifier/commit/7f4b8f04753120f7bf68793171fd5c90e02aac32))
