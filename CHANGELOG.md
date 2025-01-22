@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.1 (2025-01-22)
+
+### Bug fixes
+
+- Correct uv lock ([`2631487`](https://github.com/markm-io/slack-webhook-notifier/commit/2631487ee2c49346fbaed40b909aea4377533b00))
+- Correct formatting of err ([`e84f08d`](https://github.com/markm-io/slack-webhook-notifier/commit/e84f08d27b31a257aca7a77507c6008c1d7de09d))
+
 ## v2.0.0 (2025-01-22)
 
 ### Features
