@@ -53,9 +53,9 @@ def slack_notify(
 
 
 def send_slack_message(webhook_url: str, message: str) -> None:
-    payload = {"text": message}
     try:
-        response = requests.post(webhook_url, json=payload, timeout=10)
-        response.raise_for_status()
+        response = requests.post(webhook_url, json={"text": message}, timeout=10)
+        response.raise_for_status()  # Raises HTTPError if status code is 4xx/5xx
     except requests.exceptions.RequestException as e:
         print(f"Failed to send Slack notification: {e}")
+        raise  # Ensure exceptions are raised for testing purposes
