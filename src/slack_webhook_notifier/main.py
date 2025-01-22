@@ -31,7 +31,7 @@ def slack_notify(
                 )
                 send_slack_message(webhook_url, end_message)
                 return result
-            except Exception as e:
+            except Exception as err:
                 end_time = datetime.now()
                 duration = end_time - start_time
                 user_mention: str = f"<@{user_id}> " if user_id else ""
@@ -41,11 +41,11 @@ def slack_notify(
                     f"End Time: {end_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
                     f"Duration: {duration!s}\n"
                     f"Function Caller: {func_identifier}\n"
-                    f"Error: {e!s}\n"
+                    f"Error: {err!s}\n"
                     f"{user_mention}"
                 )
                 send_slack_message(webhook_url, error_message)
-                raise e
+                raise err
 
         return wrapper
 
