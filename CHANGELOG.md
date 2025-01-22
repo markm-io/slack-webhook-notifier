@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.0.0 (2025-01-22)
+
+### Features
+
+- Initial release and correction to pytest and ci ([`409a20d`](https://github.com/markm-io/slack-webhook-notifier/commit/409a20d8d847b7df6c82f2a978f5aca26098021d))
+
 ## v1.0.0 (2025-01-22)
 
 ### Features
