@@ -25,51 +25,48 @@ jobs:
   commitlint:
     name: Lint Commit Messages
     runs-on: self-hosted
-    permissions:
-      contents: read
-      pull-requests: read
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: wagoid/commitlint-github-action@v6.2.1
+      - uses: wagoid/commitlint-github-action@v6.0.1
 
-  #  test:
-  #    strategy:
-  #      fail-fast: false
-  #      matrix:
-  #        python-version:
-  #          - "3.10"
-  #          - "3.11"
-  #          - "3.12"
-  #        os:
-  #          - ubuntu-latest
-  #          - windows-latest
-  #          - macOS-latest
-  #    runs-on: self-hosted
-  #    steps:
-  #      - uses: actions/checkout@v4
-  #      - uses: actions/setup-python@v5
-  #        id: setup-python
-  #        with:
-  #          python-version: ${{ matrix.python-version }}
-  #      - uses: astral-sh/setup-uv@v5
-  #      - run: uv sync --no-python-downloads
-  #        shell: bash
-  #      - run: uv run pytest
-  #        shell: bash
-
-  #      - uses: codecov/codecov-action@v5
-  #        with:
-  #          token: ${{ secrets.CODECOV_TOKEN }}
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macOS-latest
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        id: setup-python
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --no-python-downloads
+        shell: bash
+      - run: uv run pytest
+        shell: bash
+      - uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   release:
     needs:
-      #      - test
+      - test
       - lint
       - commitlint
 
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     environment: release
     concurrency: release
     permissions:
@@ -89,7 +86,7 @@ jobs:
 
       # Do a dry run of PSR
       - name: Test release
-        uses: python-semantic-release/python-semantic-release@v9.16.1
+        uses: python-semantic-release/python-semantic-release@v9.15.1
         if: github.ref_name != 'main'
         with:
           root_options: --noop
@@ -97,24 +94,24 @@ jobs:
 
       # On main branch: actual PSR + upload to PyPI & GitHub
       - name: Release
-        uses: python-semantic-release/python-semantic-release@v9.16.1
+        uses: python-semantic-release/python-semantic-release@v9.15.1
         id: release
         if: github.ref_name == 'main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      #      - name: Attest build provenance
-      #        uses: actions/attest-build-provenance@v1
-      #        if: steps.release.outputs.released == 'true'
-      #        with:
-      #          subject-path: "dist/*"
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v1
+        if: steps.release.outputs.released == 'true'
+        with:
+          subject-path: "dist/*"
 
-      #      - name: Publish package distributions to PyPI
-      #        uses: pypa/gh-action-pypi-publish@release/v1
-      #        if: steps.release.outputs.released == 'true'
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        if: steps.release.outputs.released == 'true'
 
       - name: Publish package distributions to GitHub Releases
-        uses: python-semantic-release/publish-action@v9.16.1
+        uses: python-semantic-release/publish-action@v9.15.1
         if: steps.release.outputs.released == 'true'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

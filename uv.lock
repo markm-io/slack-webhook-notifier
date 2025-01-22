@@ -541,10 +541,10 @@ name = "requests"
 version = "2.32.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "certifi", marker = "python_full_version >= '3.11'" },
-    { name = "charset-normalizer", marker = "python_full_version >= '3.11'" },
-    { name = "idna", marker = "python_full_version >= '3.11'" },
-    { name = "urllib3", marker = "python_full_version >= '3.11'" },
+    { name = "certifi" },
+    { name = "charset-normalizer" },
+    { name = "idna" },
+    { name = "urllib3" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/63/70/2bf7780ad2d390a8d301ad0b550f1581eadbd9a20f896afe06353c2a2913/requests-2.32.3.tar.gz", hash = "sha256:55365417734eb18255590a9ff9eb97e9e1da868d4ccd6402399eaf68af20a760", size = 131218 }
 wheels = [
@@ -555,6 +555,9 @@ wheels = [
 name = "slack-webhook-notifier"
 version = "0.0.0"
 source = { editable = "." }
+dependencies = [
+    { name = "requests" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -569,6 +572,7 @@ docs = [
 ]
 
 [package.metadata]
+requires-dist = [{ name = "requests", specifier = ">=2.32.3" }]
 
 [package.metadata.requires-dev]
 dev = [

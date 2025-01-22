@@ -26,6 +26,7 @@ classifiers = [
 ]
 
 dependencies = [
+    "requests>=2.32.3",
 ]
 urls."Bug Tracker" = "https://github.com/markm-io/slack-webhook-notifier/issues"
 urls.Changelog = "https://github.com/markm-io/slack-webhook-notifier/blob/main/CHANGELOG.md"
