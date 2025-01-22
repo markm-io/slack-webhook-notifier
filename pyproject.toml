@@ -35,6 +35,7 @@ urls.repository = "https://github.com/markm-io/slack-webhook-notifier"
 
 [dependency-groups]
 dev = [
+  "freezegun>=1.5.1",
   "pytest>=8,<9",
   "pytest-cov>=6,<7",
 ]
