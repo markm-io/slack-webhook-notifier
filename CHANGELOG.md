@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.0.2 (2025-01-24)
+
+### Bug fixes
+
+- Correct uv lock ([`bc064a5`](https://github.com/markm-io/slack-webhook-notifier/commit/bc064a5310e73d6bc446ca79e17b385ee9fe69c9))
+
 ## v2.0.1 (2025-01-22)
 
 ### Bug fixes
