@@ -1,3 +1,4 @@
+import re
 from datetime import datetime, timedelta
 from functools import wraps
 from typing import Any, Callable, Optional
@@ -34,15 +35,21 @@ def slack_notify(
             except Exception as err:
                 end_time = datetime.now()
                 duration = end_time - start_time
+
+                # Remove any large SQL query from error message if it's a SQLAlchemy error
+                error_message = str(err)
+                if "SQL: " in error_message:
+                    error_message = re.sub(r"\[SQL: .*?\]", "", err).strip()
+
                 user_mention: str = f"<@{user_id}> " if user_id else ""
                 error_message: str = (
+                    f"{user_mention}\n"
                     f"Automation has crashed.\n"
                     f"Start Time: {start_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
                     f"End Time: {end_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
                     f"Duration: {duration!s}\n"
                     f"Function Caller: {func_identifier}\n"
-                    f"Error: {err!s}\n"
-                    f"{user_mention}"
+                    f"Error: {error_message!s}"
                 )
                 send_slack_message(webhook_url, error_message)
                 raise err

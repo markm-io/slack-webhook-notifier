@@ -95,7 +95,9 @@ def test_slack_notify_decorator_failure(webhook_url):
 
         with pytest.raises(ValueError, match="Test error"):
             test_func()
+
         assert mock_post.call_count == 2
+
         expected_calls = [
             call(
                 webhook_url,
@@ -105,15 +107,16 @@ def test_slack_notify_decorator_failure(webhook_url):
             call(
                 webhook_url,
                 json={
-                    "text": "Automation has crashed.\n"
+                    "text": "<@U123456> \n"
+                    "Automation has crashed.\n"
                     "Start Time: 2025-01-21 23:36:28\n"
                     "End Time: 2025-01-21 23:36:28\n"
                     "Duration: 0:00:00\n"
                     "Function Caller: test_func\n"
-                    "Error: Test error\n"
-                    "<@U123456> "
+                    "Error: Test error"
                 },
                 timeout=10,
             ),
         ]
+
         mock_post.assert_has_calls(expected_calls, any_order=True)
