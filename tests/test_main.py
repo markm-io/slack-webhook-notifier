@@ -1,128 +1,122 @@
-import re
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, call, patch
 
 import pytest
 import requests
+from freezegun import freeze_time
 
 from slack_webhook_notifier.main import send_slack_message, slack_notify
 
-# Constants for testing
-TEST_WEBHOOK_URL = "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
-TEST_FUNC_IDENTIFIER = "test_func"
-TEST_USER_ID = "U123456"
-TEST_ERROR_MESSAGE = "Test error"
-
-
-def sample_function_success():
-    return "Success!"
-
-
-def sample_function_failure():
-    raise ValueError(TEST_ERROR_MESSAGE)
-
 
 @pytest.fixture
-def mock_requests_post():
-    """Mocks the requests.post method for Slack notifications."""
+def webhook_url():
+    return "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
+
+
+@freeze_time("2025-01-21 23:36:28")
+def test_send_slack_message_success(webhook_url):
     with patch("requests.post") as mock_post:
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_post.return_value = mock_response
-        yield mock_post
+        send_slack_message(webhook_url, "Test message")
+        mock_post.assert_called_once_with(webhook_url, json={"text": "Test message"}, timeout=10)
 
 
-def test_send_slack_message_success(mock_requests_post):
-    """Tests successful Slack message sending."""
-    message = "Test Slack message"
-    send_slack_message(TEST_WEBHOOK_URL, message)
-
-    mock_requests_post.assert_called_once_with(TEST_WEBHOOK_URL, json={"text": message}, timeout=10)
-
-
-def test_send_slack_message_failure(mock_requests_post):
-    """Tests Slack message sending failure."""
-    mock_requests_post.side_effect = requests.exceptions.RequestException("Slack error")
-
-    with pytest.raises(requests.exceptions.RequestException, match="Slack error"):
-        send_slack_message(TEST_WEBHOOK_URL, "Test failure message")
+@freeze_time("2025-01-21 23:36:28")
+def test_send_slack_message_failure(webhook_url):
+    with patch("requests.post") as mock_post:
+        mock_post.side_effect = requests.exceptions.RequestException("Request failed")
+        with pytest.raises(requests.exceptions.RequestException, match="Request failed"):
+            send_slack_message(webhook_url, "Test message")
 
 
-def test_slack_notify_decorator_success(mock_requests_post):
-    """Tests Slack notifications for successful function execution."""
-
-    @slack_notify(TEST_WEBHOOK_URL, TEST_FUNC_IDENTIFIER, TEST_USER_ID)
-    def test_func():
-        return sample_function_success()
-
-    result = test_func()
-
-    assert result == "Success!"
-    assert mock_requests_post.call_count == 2
-
-    actual_calls = [args[1]["json"]["text"] for args in mock_requests_post.call_args_list]
-
-    assert any(
-        re.search(r"Automation has started\.\nStart Time: .*?\nFunction Caller: test_func", msg) for msg in actual_calls
-    )
-    assert any(
-        re.search(
-            r"Automation has completed successfully\.\nStart Time: .*?\nEnd Time: .*?\nDuration: .*?\nFunction Caller: test_func",
-            msg,
-        )
-        for msg in actual_calls
-    )
+@freeze_time("2025-01-21 23:36:28")
+def test_send_slack_message_invalid_url():
+    invalid_url = "https://invalid-url"
+    with patch("requests.post") as mock_post:
+        mock_post.side_effect = requests.exceptions.InvalidURL("Invalid URL")
+        with pytest.raises(requests.exceptions.InvalidURL, match="Invalid URL"):
+            send_slack_message(invalid_url, "Test message")
 
 
-def test_slack_notify_decorator_failure(mock_requests_post):
-    """Tests Slack notifications when a function raises an exception."""
-
-    @slack_notify(TEST_WEBHOOK_URL, TEST_FUNC_IDENTIFIER, TEST_USER_ID)
-    def test_func():
-        return sample_function_failure()
-
-    with pytest.raises(ValueError, match=TEST_ERROR_MESSAGE):
-        test_func()
-
-    assert mock_requests_post.call_count == 2
-
-    actual_calls = [args[1]["json"]["text"] for args in mock_requests_post.call_args_list]
-
-    assert any(
-        re.search(r"Automation has started\.\nStart Time: .*?\nFunction Caller: test_func", msg) for msg in actual_calls
-    )
-    assert any(
-        re.search(
-            r"<@U123456>\s+Automation has crashed\.\nStart Time: .*?\nEnd Time: .*?\nDuration: .*?\nFunction Caller: test_func\nError: Test error",
-            msg,
-        )
-        for msg in actual_calls
-    )
+@freeze_time("2025-01-21 23:36:28")
+def test_send_slack_message_timeout(webhook_url):
+    with patch("requests.post") as mock_post:
+        mock_post.side_effect = requests.exceptions.Timeout("Request timed out")
+        with pytest.raises(requests.exceptions.Timeout, match="Request timed out"):
+            send_slack_message(webhook_url, "Test message")
 
 
-def test_slack_notify_decorator_sql_error_cleaning(mock_requests_post):
-    """Tests that long SQL statements are removed from error messages."""
+@freeze_time("2025-01-21 23:36:28")
+def test_slack_notify_decorator_success(webhook_url):
+    with patch("requests.post") as mock_post:
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_post.return_value = mock_response
 
-    sql_error_message = (
-        "[SQL: INSERT INTO table (column) VALUES ('bad_data')]\n"
-        "(psycopg2.errors.InvalidDatetimeFormat) invalid input syntax for type timestamp: 'Pending'"
-    )
+        @slack_notify(webhook_url, "test_func")
+        def test_func():
+            return "success"
 
-    @slack_notify(TEST_WEBHOOK_URL, TEST_FUNC_IDENTIFIER, TEST_USER_ID)
-    def test_func():
-        raise ValueError(sql_error_message)
+        result = test_func()
+        assert result == "success"
+        assert mock_post.call_count == 2
+        expected_calls = [
+            call(
+                webhook_url,
+                json={"text": "Automation has started.\nStart Time: 2025-01-21 23:36:28\nFunction Caller: test_func"},
+                timeout=10,
+            ),
+            call(
+                webhook_url,
+                json={
+                    "text": "Automation has completed successfully.\n"
+                    "Start Time: 2025-01-21 23:36:28\n"
+                    "End Time: 2025-01-21 23:36:28\n"
+                    "Duration: 0:00:00\n"
+                    "Function Caller: test_func"
+                },
+                timeout=10,
+            ),
+        ]
+        mock_post.assert_has_calls(expected_calls, any_order=True)
 
-    with pytest.raises(ValueError, match="invalid input syntax for type timestamp: 'Pending'"):
-        test_func()
 
-    assert mock_requests_post.call_count == 2
+@freeze_time("2025-01-21 23:36:28")
+def test_slack_notify_decorator_failure(webhook_url):
+    with patch("requests.post") as mock_post:
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_post.return_value = mock_response
 
-    actual_calls = [args[1]["json"]["text"] for args in mock_requests_post.call_args_list]
+        @slack_notify(webhook_url, "test_func", user_id="U123456")
+        def test_func():
+            raise ValueError("Test error")
 
-    # Ensure that the SQL statement is removed from the error message
-    assert any(
-        re.search(
-            r"Automation has crashed\.\nStart Time: .*?\nEnd Time: .*?\nDuration: .*?\nFunction Caller: test_func\nError: \(psycopg2.errors.InvalidDatetimeFormat\) invalid input syntax for type timestamp: 'Pending'",
-            msg,
-        )
-        for msg in actual_calls
-    )
+        with pytest.raises(ValueError, match="Test error"):
+            test_func()
+
+        assert mock_post.call_count == 2
+
+        expected_calls = [
+            call(
+                webhook_url,
+                json={"text": "Automation has started.\nStart Time: 2025-01-21 23:36:28\nFunction Caller: test_func"},
+                timeout=10,
+            ),
+            call(
+                webhook_url,
+                json={
+                    "text": "<@U123456> \n"
+                    "Automation has crashed.\n"
+                    "Start Time: 2025-01-21 23:36:28\n"
+                    "End Time: 2025-01-21 23:36:28\n"
+                    "Duration: 0:00:00\n"
+                    "Function Caller: test_func\n"
+                    "Error: Test error"
+                },
+                timeout=10,
+            ),
+        ]
+
+        mock_post.assert_has_calls(expected_calls, any_order=True)

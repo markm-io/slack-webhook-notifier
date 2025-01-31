@@ -39,10 +39,7 @@ def slack_notify(
                 # Remove any large SQL query from error message if it's a SQLAlchemy error
                 error_message = str(err)
                 if "SQL: " in error_message:
-                    try:
-                        error_message = re.sub(r"\[SQL: .*?\]", "", error_message).strip()
-                    except Exception as e:
-                        raise e
+                    error_message = re.sub(r"\[SQL: .*?\]", "", err).strip()
 
                 user_mention: str = f"<@{user_id}> " if user_id else ""
                 error_message: str = (

@@ -78,7 +78,6 @@ lint.per-file-ignores."tests/**/*" = [
   "D103",
   "D104",
   "S101",
-  "E501"  # Ignore line length errors in tests
 ]
 lint.isort.known-first-party = [ "slack_webhook_notifier", "tests" ]
 
