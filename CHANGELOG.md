@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.0.3 (2025-01-31)
+
+### Bug fixes
+
+- User mentions when creating the json payload ([`7cc6e8c`](https://github.com/markm-io/slack-webhook-notifier/commit/7cc6e8c40da118436d25a8a57bd45d5394002a48))
+
 ## v2.0.2 (2025-01-24)
 
 ### Bug fixes
