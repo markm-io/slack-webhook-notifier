@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.4 (2025-01-31)
+
+### Bug fixes
+
+- Pytest corrections along with error handling in error message processing ([`73288c5`](https://github.com/markm-io/slack-webhook-notifier/commit/73288c57fe6290205b21aa8bae0f4c0113af2344))
+- Pytest corrections along with error handling in error message processing. ([`06699b5`](https://github.com/markm-io/slack-webhook-notifier/commit/06699b521a59e273c2f92da953fe501212e434ff))
+
 ## v2.0.3 (2025-01-31)
 
 ### Bug fixes
