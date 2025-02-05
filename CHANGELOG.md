@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.5 (2025-02-05)
+
+### Bug fixes
+
+- Add in a custom_message parameter string to allow for a return message to be sent ([`6769917`](https://github.com/markm-io/slack-webhook-notifier/commit/676991751f28199f1778c06ffc2ebd96ec6a581f))
+- Add in a custom_message parameter string to allow for a return message to be sent. ([`8fc6e9a`](https://github.com/markm-io/slack-webhook-notifier/commit/8fc6e9a9b88bbb2d60fd7bf1a0fe52f70ac8aafe))
+
 ## v2.0.4 (2025-01-31)
 
 ### Bug fixes
