@@ -7,7 +7,10 @@ import requests
 
 
 def slack_notify(
-    webhook_url: str, func_identifier: str, user_id: Optional[str] = None
+    webhook_url: str,
+    func_identifier: str,
+    user_id: Optional[str] = None,
+    custom_message: Optional[str] = None,  # New parameter for custom message
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         @wraps(func)
@@ -23,12 +26,15 @@ def slack_notify(
                 result = func(*args, **kwargs)
                 end_time: datetime = datetime.now()
                 duration: timedelta = end_time - start_time
+                # Append the custom message if provided
+                custom_message_str: str = f"\nReturn Message: {custom_message}" if custom_message else ""
                 end_message: str = (
                     f"Automation has completed successfully.\n"
                     f"Start Time: {start_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
                     f"End Time: {end_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
                     f"Duration: {duration!s}\n"
                     f"Function Caller: {func_identifier}"
+                    f"{custom_message_str}"
                 )
                 send_slack_message(webhook_url, end_message)
                 return result
