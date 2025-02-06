@@ -26,7 +26,7 @@ def slack_notify(
                 result = func(*args, **kwargs)
                 end_time: datetime = datetime.now()
                 duration: timedelta = end_time - start_time
-                custom_message_str: str = f"\nReturn Message: {custom_message}" if custom_message else ""
+                custom_message_str: str = f"\nReturn Message: {result}" if result else ""
                 end_message: str = (
                     f"Automation has completed successfully.\n"
                     f"Start Time: {start_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
