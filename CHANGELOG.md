@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.6 (2025-02-06)
+
+### Bug fixes
+
+- Downgrade python-semantic-release action to v9.17.0 in ci workflow ([`1652824`](https://github.com/markm-io/slack-webhook-notifier/commit/1652824bce9fd1b7b599b874734b1e891a8bcb54))
+- Update return message handling to display result instead of custom_message ([`e085de4`](https://github.com/markm-io/slack-webhook-notifier/commit/e085de4ed8e02840b6549dc5b31e19673a97c219))
+
 ## v2.0.5 (2025-02-05)
 
 ### Bug fixes
