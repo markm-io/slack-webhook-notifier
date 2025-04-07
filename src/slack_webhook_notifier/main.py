@@ -17,7 +17,7 @@ def slack_notify(
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             start_time: datetime = datetime.now()
             start_message: str = (
-                f"Automation has started.\n"
+                f"⏳ Automation has started.\n"
                 f"Start Time: {start_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
                 f"Function Caller: {func_identifier}"
             )
@@ -28,7 +28,7 @@ def slack_notify(
                 duration: timedelta = end_time - start_time
                 custom_message_str: str = f"\nReturn Message: {result}" if result else ""
                 end_message: str = (
-                    f"Automation has completed successfully.\n"
+                    f"✅ Automation has completed successfully.\n"
                     f"Start Time: {start_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
                     f"End Time: {end_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
                     f"Duration: {duration!s}\n"
@@ -52,7 +52,7 @@ def slack_notify(
                 user_mention: str = f"<@{user_id}> " if user_id else ""
                 error_message: str = (
                     f"{user_mention}\n"
-                    f"Automation has crashed.\n"
+                    f"🆘 Automation has crashed.\n"
                     f"Start Time: {start_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
                     f"End Time: {end_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
                     f"Duration: {duration!s}\n"
