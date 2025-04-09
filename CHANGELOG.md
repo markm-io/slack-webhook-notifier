@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.7 (2025-04-09)
+
+### Bug fixes
+
+- Enhance slack notification tests and regex patterns ([`fbcb963`](https://github.com/markm-io/slack-webhook-notifier/commit/fbcb963c4c2f2f414a8cc9d2bd6850f0b726ef4f))
+- Make output messages easier to identify. ([`6bffcf9`](https://github.com/markm-io/slack-webhook-notifier/commit/6bffcf9009821123c3b57d6aff5c97a43b3b4f1b))
+
 ## v2.0.6 (2025-02-06)
 
 ### Bug fixes
