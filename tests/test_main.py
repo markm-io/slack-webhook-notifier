@@ -92,8 +92,9 @@ def test_slack_notify_decorator_failure(mock_requests_post):
     )
     assert any(
         re.search(
-            r"<@U123456>\s+Automation has crashed\.\nStart Time: .*?\nEnd Time: .*?\nDuration: .*?\nFunction Caller: test_func\nError: Test error",
+            r"<@U123456>.*Automation has crashed.*Start Time:.*End Time:.*Duration:.*Function Caller: test_func.*Error: Test error",
             msg,
+            re.DOTALL,
         )
         for msg in actual_calls
     )
@@ -122,6 +123,32 @@ def test_slack_notify_decorator_sql_error_cleaning(mock_requests_post):
     assert any(
         re.search(
             r"Automation has crashed\.\nStart Time: .*?\nEnd Time: .*?\nDuration: .*?\nFunction Caller: test_func\nError: \(psycopg2.errors.InvalidDatetimeFormat\) invalid input syntax for type timestamp: 'Pending'",
+            msg,
+        )
+        for msg in actual_calls
+    )
+
+
+def test_slack_notify_decorator_with_custom_message(mock_requests_post):
+    """Tests Slack notifications with custom message."""
+
+    @slack_notify(TEST_WEBHOOK_URL, TEST_FUNC_IDENTIFIER, TEST_USER_ID, "Custom notification test")
+    def test_func():
+        return "Custom result"
+
+    result = test_func()
+
+    assert result == "Custom result"
+    assert mock_requests_post.call_count == 2
+
+    actual_calls = [args[1]["json"]["text"] for args in mock_requests_post.call_args_list]
+
+    assert any(
+        re.search(r"Automation has started\.\nStart Time: .*?\nFunction Caller: test_func", msg) for msg in actual_calls
+    )
+    assert any(
+        re.search(
+            r"Automation has completed successfully\.\nStart Time: .*?\nEnd Time: .*?\nDuration: .*?\nFunction Caller: test_func\nReturn Message: Custom result",
             msg,
         )
         for msg in actual_calls
